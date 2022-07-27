@@ -15,74 +15,96 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int count = 0;
+
   void decrement() {
-    print('Decrement');
+    setState((){
+      count--;
+    });
   }
 
   void increment() {
-    print('Increment');
+    setState((){
+      count++;
+    });
   }
+
+  bool get isEmpty => count == 0;
+  bool get isFull => count == 20;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.red,
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Pode Entrar',
-              style: TextStyle(
-                  fontSize: 30,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600),
+        body: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/image.png'),
+              fit: BoxFit.fitHeight,
             ),
-            const Text(
-              '0',
-              style: TextStyle(
-                fontSize: 100,
-                color: Colors.white,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                isFull ? 'Lotado' : 'Pode Entrar',
+                style: const TextStyle(
+                    fontSize: 30,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600),
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextButton(
-                  onPressed: decrement,
-                  style: TextButton.styleFrom(
-                      backgroundColor: Colors.white,
+              Text(
+                count.toString(),
+                style: TextStyle(
+                  fontSize: 100,
+                  color: isFull ? Colors.red : Colors.white,
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    onPressed: isEmpty ? null : decrement,
+                    style: TextButton.styleFrom(
+                        backgroundColor: isEmpty ? Colors.white.withOpacity(0.2) : Colors.white,
+                        fixedSize: const Size(100, 100),
+                        primary: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        )),
+                    child: const Text(
+                      'Saiu',
+                      style: TextStyle(color: Colors.black, fontSize: 16),
+                    ),
+                  ),
+                  const SizedBox(width: 32),
+                  TextButton(
+                    onPressed: isFull ? null :increment,
+                    style: TextButton.styleFrom(
+                      backgroundColor: isFull ? Colors.white.withOpacity(0.2) : Colors.white,
                       fixedSize: const Size(100, 100),
                       primary: Colors.black,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
-                      )),
-                  child: const Text(
-                    'Saiu',
-                    style: TextStyle(color: Colors.black, fontSize: 16),
-                  ),
-                ),
-                const SizedBox(width: 32),
-                TextButton(
-                  onPressed: increment,
-                  style: TextButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    fixedSize: const Size(100, 100),
-                    primary: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
+                      ),
                     ),
-                  ),
-                  child: const Text(
-                    'Entrou',
-                    style: TextStyle(color: Colors.black, fontSize: 16),
-                  ),
-                )
-              ],
-            ),
-          ],
+                    child: const Text(
+                      'Entrou',
+                      style: TextStyle(color: Colors.black, fontSize: 16),
+                    ),
+                  )
+                ],
+              ),
+            ],
+          ),
         ));
-  }
+}
 }
