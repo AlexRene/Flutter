@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 class TodoListPage extends StatelessWidget {
-  const TodoListPage({Key? key}) : super(key: key);
+  TodoListPage({Key? key}) : super(key: key);
+
+  final TextEditingController emailController =
+      TextEditingController(); // Cria um controller do tipo email
 
   @override
   Widget build(BuildContext context) {
@@ -9,24 +12,30 @@ class TodoListPage extends StatelessWidget {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: TextField(
-            decoration: InputDecoration(
-              labelText: 'Preço',
-              hintText: 'exemplo@exemplo.com',
-              //border: OutlineInputBorder(),
-              errorText: 'Campo Obrigatório',
-              prefixText: 'R\$ ', //Deixa um texto fixo na parte esquerda da tela
-              suffixText: 'cm',
-            ),
-            keyboardType: TextInputType.number,
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-            ),
-            //obscureText: true, //Oculta o que for digitado
-            obscuringCharacter: 'x', // Muda o caracter obscuro
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: emailController,
+                decoration: InputDecoration(
+                  labelText: 'E-mail',
+                ),
+              ),
+              ElevatedButton(
+                onPressed: login,
+                child: Text('Entrar'),
+              ),
+            ],
           ),
         ),
       ),
     );
+  }
+  void login()
+  {
+    String text = emailController.text;
+    print(text);
+    emailController.clear(); //Limpa o conteudo do campo
+    emailController.text = 'Oi'; //Coloca um texto no campo
   }
 }
