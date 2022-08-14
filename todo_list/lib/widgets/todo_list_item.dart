@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:todo_list/models/todo.dart';
 
 class TodoListItem extends StatelessWidget {
-  const TodoListItem({Key? key, required this.title}) : super(key: key);
+  const TodoListItem({Key? key, required this.todo}) : super(key: key);
 
-  final String title;
+  final Todo todo;
 
   @override
   Widget build(BuildContext context) {
@@ -18,13 +20,13 @@ class TodoListItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '13/08/2022',
+            DateFormat('dd/MM/yyyy').format(todo.dateTime),// Entre aspas o formato em que as detas vao ser exibidas, com 3 MMM o nome é exibido
             style: TextStyle(
               fontSize: 12,
             ),
           ),
           Text(
-            title,
+            todo.title,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,

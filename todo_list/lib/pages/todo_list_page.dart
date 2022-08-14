@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../models/todo.dart';
 import '../widgets/todo_list_item.dart';
 
 class TodoListPage extends StatefulWidget {
@@ -12,7 +13,7 @@ class TodoListPage extends StatefulWidget {
 class _TodoListPageState extends State<TodoListPage> {
   final TextEditingController todoController = TextEditingController();
  // Pega o valor de um campo
-  List<String> tarefas = [];
+  List<Todo> tarefas = [];
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +43,9 @@ class _TodoListPageState extends State<TodoListPage> {
                       onPressed: () {
                         String text = todoController.text;
                         setState((){
-                          tarefas.add(text);
+                          Todo newTodo = Todo(title: text,
+                              dateTime: DateTime.now());
+                          tarefas.add(newTodo);
                         });
                         todoController.clear();
                       },
@@ -62,9 +65,9 @@ class _TodoListPageState extends State<TodoListPage> {
                   child: ListView(
                     shrinkWrap: true, // Deixa a lista o mais enxuta possível na tela do app
                     children: [
-                      for(String todo in tarefas )
+                      for(Todo todo in tarefas )
                         TodoListItem(
-                          title: todo,
+                          todo: todo,
                         ),
                     ],
                   ),
