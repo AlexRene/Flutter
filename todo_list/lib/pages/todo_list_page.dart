@@ -68,6 +68,7 @@ class _TodoListPageState extends State<TodoListPage> {
                       for(Todo todo in tarefas )
                         TodoListItem(
                           todo: todo,
+                          onDelete: onDelete,
                         ),
                     ],
                   ),
@@ -97,5 +98,12 @@ class _TodoListPageState extends State<TodoListPage> {
         ),
       ),
     );
+  }
+
+  void onDelete(Todo todo)
+  {
+    setState((){
+      tarefas.remove(todo);
+    });
   }
 }
