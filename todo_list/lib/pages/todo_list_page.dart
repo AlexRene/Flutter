@@ -20,6 +20,8 @@ class _TodoListPageState extends State<TodoListPage> {
   Todo? deletedTarefas;
   int? deletedTarefasPos;
 
+  String? errorText;
+
 
   @override
   void initState() {
@@ -52,6 +54,16 @@ class _TodoListPageState extends State<TodoListPage> {
                           border: OutlineInputBorder(),
                           labelText: 'Adicione uma tarefa',
                           hintText: 'Ex.: Estudar Flutter',
+                          errorText: errorText,
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Color(0xff00d7f3),
+                              width: 2,
+                            ),
+                          ),
+                          labelStyle: TextStyle(
+                            color: Color(0xff00d7f3),
+                          ),
                         ),
                       ),
                     ),
@@ -59,10 +71,19 @@ class _TodoListPageState extends State<TodoListPage> {
                     ElevatedButton(
                       onPressed: () {
                         String text = todoController.text;
+
+                        if(text.isEmpty){
+                          setState((){
+                            errorText = 'O titulo nao pode ser vazio!'; //Adiciona msg de erro
+                          });
+                          return;
+                        }
+
                         setState(() {
                           Todo newTodo =
                               Todo(title: text, dateTime: DateTime.now());
                           tarefas.add(newTodo);
+                          errorText = null; //Zera a msg de erro pra nao ficar aparecendo na tela caso haja uma entrada de dados valida
                         });
                         todoController.clear();
                         todoRepository.saveTodoList(tarefas);
