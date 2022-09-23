@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_list/repositories/todo_repository.dart';
 
 import '../models/todo.dart';
 import '../widgets/todo_list_item.dart';
@@ -12,10 +13,24 @@ class TodoListPage extends StatefulWidget {
 
 class _TodoListPageState extends State<TodoListPage> {
   final TextEditingController todoController = TextEditingController();
- // Pega o valor de um campo
+  final TodoRepository todoRepository = TodoRepository();
+
+  // Pega o valor de um campo
   List<Todo> tarefas = [];
   Todo? deletedTarefas;
   int? deletedTarefasPos;
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    todoRepository.getTodoList().then((value) {
+      setState((){
+        tarefas = value;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,12 +59,13 @@ class _TodoListPageState extends State<TodoListPage> {
                     ElevatedButton(
                       onPressed: () {
                         String text = todoController.text;
-                        setState((){
-                          Todo newTodo = Todo(title: text,
-                              dateTime: DateTime.now());
+                        setState(() {
+                          Todo newTodo =
+                              Todo(title: text, dateTime: DateTime.now());
                           tarefas.add(newTodo);
                         });
                         todoController.clear();
+                        todoRepository.saveTodoList(tarefas);
                       },
                       child: Icon(
                         Icons.add,
@@ -65,9 +81,10 @@ class _TodoListPageState extends State<TodoListPage> {
                 SizedBox(height: 16),
                 Flexible(
                   child: ListView(
-                    shrinkWrap: true, // Deixa a lista o mais enxuta possível na tela do app
+                    shrinkWrap: true,
+                    // Deixa a lista o mais enxuta possível na tela do app
                     children: [
-                      for(Todo todo in tarefas )
+                      for (Todo todo in tarefas)
                         TodoListItem(
                           todo: todo,
                           onDelete: onDelete,
@@ -80,12 +97,12 @@ class _TodoListPageState extends State<TodoListPage> {
                   children: [
                     Expanded(
                       child: Text(
-                          'Você possui ${tarefas.length} tarefas pendentes',
+                        'Você possui ${tarefas.length} tarefas pendentes',
                       ),
                     ),
                     SizedBox(width: 8),
                     ElevatedButton(
-                      onPressed: (){},
+                      onPressed: showDeleteTodosConfirmationDialog,
                       style: ElevatedButton.styleFrom(
                         primary: Color(0xff00d7f3),
                         padding: EdgeInsets.all(14),
@@ -102,29 +119,66 @@ class _TodoListPageState extends State<TodoListPage> {
     );
   }
 
-  void onDelete(Todo todo)
-  {
+  void onDelete(Todo todo) {
     deletedTarefas = todo;
     deletedTarefasPos = tarefas.indexOf(todo);
 
-    setState((){
+    setState(() {
       tarefas.remove(todo);
     });
+    todoRepository.saveTodoList(tarefas);
 
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Tarefa ${todo.title} foi deletada com sucesso!'),
+      SnackBar(
+        content: Text('Tarefa ${todo.title} foi deletada com sucesso!'),
         action: SnackBarAction(
           label: 'Desfazer',
           textColor: const Color(0xff00d7f3),
-          onPressed: (){
-            setState((){
+          onPressed: () {
+            setState(() {
               tarefas.insert(deletedTarefasPos!, deletedTarefas!);
             });
+            todoRepository.saveTodoList(tarefas);
           },
         ),
         duration: const Duration(seconds: 5),
       ),
     );
+  }
+
+  void showDeleteTodosConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Limpar Tudo?'),
+        content: Text('Voce tem certeza que deseja apagar todas as tarefas?'),
+        actions: [
+          TextButton(
+            onPressed: (){
+              Navigator.of(context).pop();
+            },
+            style: TextButton.styleFrom(primary: Color(0xff00d7f3)),
+            child: Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: (){
+              Navigator.of(context).pop();
+              deleteAllTodos();
+            },
+            style: TextButton.styleFrom(primary: Colors.red),
+            child: Text('Limpar Tudo'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void deleteAllTodos()
+  {
+    setState((){
+      tarefas.clear();
+    });
+    todoRepository.saveTodoList(tarefas);
   }
 }
