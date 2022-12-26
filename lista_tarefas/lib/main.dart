@@ -21,24 +21,23 @@ class _HomeState extends State<Home> {
   final _toDoController = TextEditingController();
   List _toDoList = [];
 
-
   @override
   void initState() {
     super.initState();
 
     _readData().then((data) {
-      setState((){
+      setState(() {
         _toDoList = json.decode(data!);
       });
     });
   }
 
-  void _addToDo(){
-    setState((){
+  void _addToDo() {
+    setState(() {
       Map<String, dynamic> newToDo = Map();
       newToDo["title"] = _toDoController.text;
       _toDoController.text = "";
-      newToDo["ok"]= false;
+      newToDo["ok"] = false;
       _toDoList.add(newToDo);
       _saveData();
     });
@@ -78,26 +77,42 @@ class _HomeState extends State<Home> {
           ),
           Expanded(
             child: ListView.builder(
-              padding: EdgeInsets.only(top: 10.0),
+                padding: EdgeInsets.only(top: 10.0),
                 itemCount: _toDoList.length,
-                itemBuilder: (context, index){
-                  return CheckboxListTile(
-                    title: Text(_toDoList[index]["title"]),
-                    value: _toDoList[index]["ok"],
-                    secondary: CircleAvatar(
-                      child: Icon( _toDoList[index]["ok"] ?
-                      Icons.check : Icons.error),
-                    ),
-                    onChanged: (c) {
-                      setState((){
-                        _toDoList[index]["ok"] = c; //Se marcar o checkbox o icone muda
-                        _saveData();
-                      });
-                    },
-                  );
-                }),
+                itemBuilder: buildItem),
           )
         ],
+      ),
+    );
+  }
+
+  Widget buildItem(context, index) {
+    return Dismissible(
+      key: Key(DateTime.now().millisecondsSinceEpoch.toString()),
+      background: Container(
+        color: Colors.red,
+        child: Align(
+          alignment: Alignment(-0.9, 0.0),
+          child: Icon(
+            Icons.delete,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      direction: DismissDirection.startToEnd, //Ajusta a direcao do dismissible da esquerda para a direita
+      child: CheckboxListTile(
+        title: Text(_toDoList[index]["title"]),
+        value: _toDoList[index]["ok"],
+        secondary: CircleAvatar(
+          child: Icon( _toDoList[index]["ok"] ?
+          Icons.check : Icons.error),
+        ),
+        onChanged: (c) {
+          setState((){
+            _toDoList[index]["ok"] = c; //Se marcar o checkbox o icone muda
+            _saveData();
+          });
+        },
       ),
     );
   }
